@@ -6,6 +6,8 @@ import zio.{Task, ZIO}
 import zio.interop.catz._
 
 object Database {
+  // An interface to provide access to the service.
+
   trait Service {
     def createTable: Task[Unit]
     def dropTable: Task[Unit]
@@ -23,6 +25,9 @@ trait Database {
 }
 
 object db {
+  // Helper functions that use ZIO.accessM, so that it is easier to access the database
+  // service as an environmental effect.
+
   def createTable: ZIO[Database, Throwable, Unit] =
     ZIO.accessM(_.database.createTable)
 
@@ -49,6 +54,7 @@ object db {
 }
 
 trait DatabaseLive extends Database {
+  // A module to actually interact with the database.
 
   protected def tnx: Transactor[Task] = Transactor.fromDriverManager[Task](
     "org.sqlite.JDBC",
